@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class EventController {
@@ -24,5 +25,13 @@ public class EventController {
         er.save(event);
 
         return "redirect:/registerEvent";
+    }
+
+    @RequestMapping("/events")
+    public ModelAndView listEvents() {
+        ModelAndView mv = new ModelAndView("index.html");
+        Iterable<Event> events = er.findAll();
+        mv.addObject("events", events);
+        return mv;
     }
 }
