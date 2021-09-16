@@ -61,6 +61,13 @@ public class EventController {
         return mv;
     }
 
+    @RequestMapping("/deleteEvent")
+    public String deleteEvent(long code) {
+        Event event = er.findByCode(code);
+        er.delete(event);
+        return "redirect:/events";
+    }
+
     @RequestMapping(value = "/{code}", method = RequestMethod.POST)
     public String detailsEventPost(@PathVariable("code") long code, @Valid Guest guest, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
@@ -72,5 +79,16 @@ public class EventController {
         gr.save(guest);
         attributes.addFlashAttribute("message", "Convidado adicionado com sucesso!");
         return "redirect:/{code}";
+    }
+
+    @RequestMapping("/deleteGuest")
+    public String deleteGuest(String rg) {
+        Guest guest = gr.findByRg(rg);
+        gr.delete(guest);
+
+        Event event = guest.getEvent();
+        long codeLong = event.getCode();
+        String code = "" + codeLong;
+        return "redirect:/" + code;
     }
 }
