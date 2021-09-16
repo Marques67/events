@@ -46,6 +46,10 @@ public class EventController {
         Event event = er.findByCode(code);
         ModelAndView mv = new ModelAndView("event/detailsEvent.html");
         mv.addObject("event", event);
+
+        Iterable<Guest> guests = gr.findByEvent(event);
+        mv.addObject("guests", guests);
+
         return mv;
     }
 
