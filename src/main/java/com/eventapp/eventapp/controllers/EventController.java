@@ -6,10 +6,14 @@ import com.eventapp.repository.EventRepository;
 import com.eventapp.repository.GuestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.validation.Valid;
 
 @Controller
 public class EventController {
@@ -26,10 +30,14 @@ public class EventController {
     }
 
     @RequestMapping(value = "/registerEvent", method = RequestMethod.POST)
-    public String form(Event event){
+    public String form(@Valid Event event, BindingResult result, RedirectAttributes attributes){
+        if (result.hasErrors()) {
+            attributes.addFlashAttribute("message", "Verifique os campos!");
+            return "redirect:/registerEvent";
+        }
 
         er.save(event);
-
+        attributes.addFlashAttribute("message", "Verifique os campos!");
         return "redirect:/registerEvent";
     }
 
@@ -54,10 +62,15 @@ public class EventController {
     }
 
     @RequestMapping(value = "/{code}", method = RequestMethod.POST)
-    public String detailsEventPost(@PathVariable("code") long code, Guest guest) {
+    public String detailsEventPost(@PathVariable("code") long code, @Valid Guest guest, BindingResult result, RedirectAttributes attributes) {
+        if (result.hasErrors()) {
+            attributes.addFlashAttribute("message", "Verifique os campos!");
+            return "redirect:/{code}";
+        }
         Event event = er.findByCode(code);
         guest.setEvent(event);
         gr.save(guest);
+        attributes.addFlashAttribute("message", "Convidado adicionado com sucesso!");
         return "redirect:/{code}";
     }
 }
